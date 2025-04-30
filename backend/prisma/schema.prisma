@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  nickname  String    @unique
+  role      Role      @default(USER)
+  firstName String
+  lastName  String
+  bio       String?
+  avatarUrl String?
+  posts     Post[]
+  comments  Comment[]
+
+  followers Subscription[] @relation("Followers")
+  following Subscription[] @relation("Following")
+}
+
+model Post {
+  id       Int       @id @default(autoincrement())
+  content  String
+  imageUrl String?
+  likes    Int       @default(0)
+  dislikes Int       @default(0)
+  author   User      @relation(fields: [authorId], references: [id])
+  authorId Int
+  comments Comment[]
+}
+
+model Comment {
+  id       Int    @id @default(autoincrement())
+  content  String
+  likes    Int    @default(0)
+  dislikes Int    @default(0)
+  post     Post   @relation(fields: [postId], references: [id])
+  postId   Int
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId Int
+}
+
+model Subscription {
+  id          Int  @id @default(autoincrement())
+  follower    User @relation("Following", fields: [followerId], references: [id])
+  followerId  Int
+  following   User @relation("Followers", fields: [followingId], references: [id])
+  followingId Int
+
+  @@unique([followerId, followingId])
+}
