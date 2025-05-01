@@ -12,35 +12,35 @@ export class UsersController {
 
     @ApiOperation({ summary: "Создание пользователя" })
     @Post("/create")
-    // @Auth("ADMIN")
+    @Auth("ADMIN")
     create(@Body() dto: CreateUserDto) {
         return this.usersService.create(dto);
     }
 
     @ApiOperation({ summary: "Получение всех пользователей" })
     @Get("/all")
-    // @Auth()
+    @Auth()
     getAll() {
         return this.usersService.getAllUsers();
     }
 
     @ApiOperation({ summary: "Поиск пользователя по id" })
     @Get("/find/:id")
-    // @Auth()
+    @Auth()
     findById(@Param("id") id: string) {
         return this.usersService.findById(id);
     }
 
     @ApiOperation({ summary: "Обновление данных пользователя" })
     @Patch("/update/:id")
-    // @Auth()
+    @Auth()
     update(@Param("id") id: string, @Body() dto: UpdateUserDto) {
         return this.usersService.updateById(+id, dto);
     }
 
     @ApiOperation({ summary: "Удаление пользователя" })
     @Delete("/delete/:id")
-    // @Auth("ADMIN")
+    @Auth("ADMIN")
     delete(@Param("id") id: string) {
         return this.usersService.deleteById(+id);
     }

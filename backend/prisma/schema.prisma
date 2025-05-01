@@ -7,79 +7,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
+enum role {
+  user
+  admin
 }
 
-model User {
-  id            Int       @id @default(autoincrement())
-  nickname      String    @unique
-  email         String    @unique
-  role          Role      @default(USER)
-  hash          String
-  first_name    String
-  last_name     String
-  bio           String?
-  avatar_url    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model user {
+  id         Int      @id @default(autoincrement())
+  nickname   String   @unique
+  email      String   @unique
+  role       role     @default(user)
+  hash       String
+  first_name String
+  last_name  String
+  bio        String?
+  avatar_url String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  posts         Post[]
-  comments      Comment[]
-  refreshTokens RefreshToken[]
-  followers     Subscription[] @relation("Followers")
-  following     Subscription[] @relation("Following")
+  posts                  post[]
+  comments               comment[]
+  refresh_tokens         refresh_token[]
+  followers              subscription[]  @relation("followers")
+  following              subscription[]  @relation("following")
+  notifications_received notification[]  @relation("notifications_received")
+  notifications_sent     notification[]  @relation("notifications_sent")
 }
 
-model RefreshToken {
+model refresh_token {
   id         Int      @id @default(autoincrement())
   token      String   @unique
   user_id    Int
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  expires_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  user       User     @relation(fields: [user_id], references: [id])
+  user user @relation(fields: [user_id], references: [id])
 }
 
-
-model Post {
-  id         Int       @id @default(autoincrement())
+model post {
+  id         Int      @id @default(autoincrement())
   content    String
   image_url  String?
-  likes      Int       @default(0)
-  dislikes   Int       @default(0)
+  likes      Int      @default(0)
+  dislikes   Int      @default(0)
   author_id  Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  comments   Comment[]
-  author     User      @relation(fields: [author_id], references: [id])
+  comments comment[]
+  author   user      @relation(fields: [author_id], references: [id])
 }
 
-model Comment {
-  id        Int    @id @default(autoincrement())
-  content   String
-  likes     Int    @default(0)
-  dislikes  Int    @default(0)
-  post_id   Int
-  author_id Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model comment {
+  id         Int      @id @default(autoincrement())
+  content    String
+  likes      Int      @default(0)
+  dislikes   Int      @default(0)
+  post_id    Int
+  author_id  Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  author    User   @relation(fields: [author_id], references: [id])
-  post      Post   @relation(fields: [post_id], references: [id])
+  post   post @relation(fields: [post_id], references: [id])
+  author user @relation(fields: [author_id], references: [id])
 }
 
-model Subscription {
-  id           Int  @id @default(autoincrement())
+model subscription {
+  id           Int      @id @default(autoincrement())
   follower_id  Int
   following_id Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
-  follower     User @relation("Following", fields: [follower_id], references: [id])
-  following    User @relation("Followers", fields: [following_id], references: [id])
+  follower  user @relation("following", fields: [follower_id], references: [id])
+  following user @relation("followers", fields: [following_id], references: [id])
+
   @@unique([follower_id, following_id])
+}
+
+model notification {
+  id           Int      @id @default(autoincrement())
+  type         String
+  message      String
+  recipient_id Int
+  sender_id    Int?
+  is_read      Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  recipient user  @relation("notifications_received", fields: [recipient_id], references: [id])
+  sender    user? @relation("notifications_sent", fields: [sender_id], references: [id])
 }

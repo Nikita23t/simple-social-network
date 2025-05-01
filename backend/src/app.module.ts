@@ -7,9 +7,8 @@ import { PostsModule } from "./posts/posts.module";
 import { AuthModule } from "./auth/auth.module";
 import { CommentsModule } from './comments/comments.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
-import { NotificationModule } from './notification/notification.module';
+import {NotificationsModule} from "./notification/notification.module";
 import * as path from "node:path";
-
 
 @Module({
   controllers: [],
@@ -30,7 +29,7 @@ import * as path from "node:path";
     AuthModule,
     CommentsModule,
     SubscriptionsModule,
-    NotificationModule
+    NotificationsModule
   ],
   exports: [],
 })

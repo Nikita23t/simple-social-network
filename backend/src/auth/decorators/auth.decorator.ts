@@ -6,13 +6,14 @@ import { UserGuard } from "../guards/user.guards";
 
 export type TypeRole = "ADMIN" | "USER" | undefined;
 
-export function Auth(role: TypeRole = "USER") {
-    return applyDecorators(
-        role === "ADMIN"
-            ? UseGuards(JwtAuthGuard, AdminGuard)
-            : UseGuards(JwtAuthGuard),
-        role === "USER"
-            ? UseGuards(JwtAuthGuard, UserGuard)
-            : UseGuards(JwtAuthGuard),
-    );
+export function Auth(role?: TypeRole) {
+    if (role === "ADMIN") {
+        return applyDecorators(UseGuards(JwtAuthGuard, AdminGuard));
+    }
+
+    if (role === "USER") {
+        return applyDecorators(UseGuards(JwtAuthGuard, UserGuard));
+    }
+
+    return applyDecorators(UseGuards(JwtAuthGuard));
 }

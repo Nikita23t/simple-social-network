@@ -17,25 +17,25 @@ import {
     constructor(private readonly subscriptionsService: SubscriptionsService) {}
   
     @Post()
-    // @Auth()
+    @Auth()
     subscribe(@Req() req, @Body() dto: SubscribeDto) {
       return this.subscriptionsService.subscribe(req.user.id, dto);
     }
   
     @Delete(':targetUserId')
-    // @Auth()
+    @Auth()
     unsubscribe(@Req() req, @Param('targetUserId', ParseIntPipe) targetUserId: number) {
       return this.subscriptionsService.unsubscribe(req.user.id, targetUserId);
     }
   
     @Get('followers/:userId')
-    // @Auth()
+    @Auth()
     getFollowers(@Param('userId', ParseIntPipe) userId: number) {
       return this.subscriptionsService.getFollowers(userId);
     }
   
     @Get('following/:userId')
-    // @Auth()
+    @Auth()
     getFollowing(@Param('userId', ParseIntPipe) userId: number) {
       return this.subscriptionsService.getFollowing(userId);
     }
