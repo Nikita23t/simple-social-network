@@ -16,24 +16,26 @@ import {
   export class SubscriptionsController {
     constructor(private readonly subscriptionsService: SubscriptionsService) {}
   
-    @Auth()
     @Post()
+    // @Auth()
     subscribe(@Req() req, @Body() dto: SubscribeDto) {
       return this.subscriptionsService.subscribe(req.user.id, dto);
     }
   
-    @Auth()
     @Delete(':targetUserId')
+    // @Auth()
     unsubscribe(@Req() req, @Param('targetUserId', ParseIntPipe) targetUserId: number) {
       return this.subscriptionsService.unsubscribe(req.user.id, targetUserId);
     }
   
     @Get('followers/:userId')
+    // @Auth()
     getFollowers(@Param('userId', ParseIntPipe) userId: number) {
       return this.subscriptionsService.getFollowers(userId);
     }
   
     @Get('following/:userId')
+    // @Auth()
     getFollowing(@Param('userId', ParseIntPipe) userId: number) {
       return this.subscriptionsService.getFollowing(userId);
     }

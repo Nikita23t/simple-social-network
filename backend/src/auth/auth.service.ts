@@ -72,14 +72,14 @@ export class AuthService {
   }
 
   async generateTokens(user: User) {
-    const payload = { sub: user.id, nickname: user.nickname };
+    const payload = { id: user.id, nickname: user.nickname };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
       expiresIn: '15m',
     });
 
     const refreshToken = this.jwtService.sign(
-      { sub: user.id },
+      { id: user.id },
       {
         secret: process.env.JWT_REFRESH_SECRET,
         expiresIn: '7d',
@@ -112,7 +112,7 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(
       {
-        sub: tokenEntity.user.id,
+        id: tokenEntity.user.id,
         nickname: tokenEntity.user.nickname,
       },
       {

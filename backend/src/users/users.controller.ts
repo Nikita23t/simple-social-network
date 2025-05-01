@@ -11,36 +11,36 @@ export class UsersController {
     constructor(private usersService: UsersService) { }
 
     @ApiOperation({ summary: "Создание пользователя" })
-    @Post()
-    @Auth("ADMIN")
+    @Post("/create")
+    // @Auth("ADMIN")
     create(@Body() dto: CreateUserDto) {
         return this.usersService.create(dto);
     }
 
     @ApiOperation({ summary: "Получение всех пользователей" })
-    @Get()
-    @Auth()
+    @Get("/all")
+    // @Auth()
     getAll() {
         return this.usersService.getAllUsers();
     }
 
     @ApiOperation({ summary: "Поиск пользователя по id" })
-    @Get(":id")
-    @Auth()
+    @Get("/find/:id")
+    // @Auth()
     findById(@Param("id") id: string) {
-        return this.usersService.findById(+id);
+        return this.usersService.findById(id);
     }
 
     @ApiOperation({ summary: "Обновление данных пользователя" })
-    @Patch(":id")
-    @Auth()
+    @Patch("/update/:id")
+    // @Auth()
     update(@Param("id") id: string, @Body() dto: UpdateUserDto) {
-        return this.usersService.update(+id, dto);
+        return this.usersService.updateById(+id, dto);
     }
 
     @ApiOperation({ summary: "Удаление пользователя" })
-    @Delete(":id")
-    @Auth("ADMIN")
+    @Delete("/delete/:id")
+    // @Auth("ADMIN")
     delete(@Param("id") id: string) {
         return this.usersService.deleteById(+id);
     }

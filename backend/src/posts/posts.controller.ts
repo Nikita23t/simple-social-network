@@ -18,30 +18,32 @@ import {
   export class PostsController {
     constructor(private postsService: PostsService) {}
   
-    @Auth()
-    @Post()
+    @Post("/create")
+    // @Auth()
     create(@Req() req, @Body() dto: CreatePostDto) {
       return this.postsService.create(req.user.id, dto);
     }
   
-    @Get()
+    @Get("/all")
+    // @Auth()
     findAll() {
       return this.postsService.findAll();
     }
   
-    @Get(':id')
+    @Get("/find/:id")
+    // @Auth()
     findById(@Param('id', ParseIntPipe) id: number) {
       return this.postsService.findById(id);
     }
   
-    @Auth()
-    @Patch(':id')
+    @Patch("/update/:id")
+    // @Auth()
     update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
       return this.postsService.update(id, dto);
     }
   
-    @Auth()
-    @Delete(':id')
+    @Delete("/delete/:id")
+    // @Auth()
     delete(@Param('id', ParseIntPipe) id: number) {
       return this.postsService.delete(id);
     }
