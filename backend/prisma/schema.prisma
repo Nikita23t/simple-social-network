@@ -13,48 +13,73 @@ enum Role {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  nickname  String    @unique
-  role      Role      @default(USER)
-  firstName String
-  lastName  String
-  bio       String?
-  avatarUrl String?
-  posts     Post[]
-  comments  Comment[]
+  id            Int       @id @default(autoincrement())
+  nickname      String    @unique
+  email         String    @unique
+  role          Role      @default(USER)
+  hash          String
+  first_name    String
+  last_name     String
+  bio           String?
+  avatar_url    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  followers Subscription[] @relation("Followers")
-  following Subscription[] @relation("Following")
+  posts         Post[]
+  comments      Comment[]
+  refreshTokens RefreshToken[]
+  followers     Subscription[] @relation("Followers")
+  following     Subscription[] @relation("Following")
 }
 
+model RefreshToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  user_id    Int
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       User     @relation(fields: [user_id], references: [id])
+}
+
+
 model Post {
-  id       Int       @id @default(autoincrement())
-  content  String
-  imageUrl String?
-  likes    Int       @default(0)
-  dislikes Int       @default(0)
-  author   User      @relation(fields: [authorId], references: [id])
-  authorId Int
-  comments Comment[]
+  id         Int       @id @default(autoincrement())
+  content    String
+  image_url  String?
+  likes      Int       @default(0)
+  dislikes   Int       @default(0)
+  author_id  Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  comments   Comment[]
+  author     User      @relation(fields: [author_id], references: [id])
 }
 
 model Comment {
-  id       Int    @id @default(autoincrement())
-  content  String
-  likes    Int    @default(0)
-  dislikes Int    @default(0)
-  post     Post   @relation(fields: [postId], references: [id])
-  postId   Int
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId Int
+  id        Int    @id @default(autoincrement())
+  content   String
+  likes     Int    @default(0)
+  dislikes  Int    @default(0)
+  post_id   Int
+  author_id Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author    User   @relation(fields: [author_id], references: [id])
+  post      Post   @relation(fields: [post_id], references: [id])
 }
 
 model Subscription {
-  id          Int  @id @default(autoincrement())
-  follower    User @relation("Following", fields: [followerId], references: [id])
-  followerId  Int
-  following   User @relation("Followers", fields: [followingId], references: [id])
-  followingId Int
+  id           Int  @id @default(autoincrement())
+  follower_id  Int
+  following_id Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  @@unique([followerId, followingId])
+  follower     User @relation("Following", fields: [follower_id], references: [id])
+  following    User @relation("Followers", fields: [following_id], references: [id])
+  @@unique([follower_id, following_id])
 }

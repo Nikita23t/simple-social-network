@@ -7,6 +7,7 @@ import { PostsModule } from "./posts/posts.module";
 import { AuthModule } from "./auth/auth.module";
 import { CommentsModule } from './comments/comments.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { NotificationModule } from './notification/notification.module';
 import * as path from "node:path";
 
 
@@ -18,17 +19,18 @@ import * as path from "node:path";
       isGlobal: true,
     }),
     MulterModule.register({
-      dest: path.resolve(__dirname, "../..", "uploads"),
+      dest: path.resolve(__dirname, "../..", "images"),
     }),
     ServeStaticModule.forRoot({
-      rootPath: path.resolve(__dirname, "../..", "uploads"),
+      rootPath: path.resolve(__dirname, "../..", "images"),
       serveRoot: "/api/uploads",
     }),
     UsersModule,
     PostsModule,
     AuthModule,
     CommentsModule,
-    SubscriptionsModule
+    SubscriptionsModule,
+    NotificationModule
   ],
   exports: [],
 })

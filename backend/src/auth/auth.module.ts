@@ -5,9 +5,10 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import {UsersModule} from "../users/users.module";
 import {JwtStrategy} from "./strategy/jwt.strategy";
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({controllers: [AuthController],
-    providers: [AuthService, JwtStrategy],
+    providers: [AuthService, JwtStrategy, PrismaService],
     imports: [
         JwtModule.registerAsync({
             imports: [ConfigModule],
