@@ -7,16 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum role {
-  user
-  admin
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+}
+
+enum target_type {
+  POST
+  COMMENT
 }
 
 model user {
   id         Int      @id @default(autoincrement())
   nickname   String   @unique
   email      String   @unique
-  role       role     @default(user)
+  role       Role     @default(USER)
   hash       String
   first_name String
   last_name  String
@@ -32,6 +42,7 @@ model user {
   following              subscription[]  @relation("following")
   notifications_received notification[]  @relation("notifications_received")
   notifications_sent     notification[]  @relation("notifications_sent")
+  reaction               reaction[]
 }
 
 model refresh_token {
@@ -56,7 +67,8 @@ model post {
   updated_at DateTime @updatedAt
 
   comments comment[]
-  author   user      @relation(fields: [author_id], references: [id])
+  author   user       @relation(fields: [author_id], references: [id])
+  reaction reaction[]
 }
 
 model comment {
@@ -69,8 +81,9 @@ model comment {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  post   post @relation(fields: [post_id], references: [id])
-  author user @relation(fields: [author_id], references: [id])
+  post     post       @relation(fields: [post_id], references: [id])
+  author   user       @relation(fields: [author_id], references: [id])
+  reaction reaction[]
 }
 
 model subscription {
@@ -98,4 +111,20 @@ model notification {
 
   recipient user  @relation("notifications_received", fields: [recipient_id], references: [id])
   sender    user? @relation("notifications_sent", fields: [sender_id], references: [id])
+}
+
+model reaction {
+  id         Int          @id @default(autoincrement())
+  user_id    Int
+  post_id    Int?
+  comment_id Int?
+  type       ReactionType
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+
+  user    user     @relation(fields: [user_id], references: [id])
+  post    post?    @relation(fields: [post_id], references: [id])
+  comment comment? @relation(fields: [comment_id], references: [id])
+
+  @@unique([user_id, post_id, comment_id])
 }

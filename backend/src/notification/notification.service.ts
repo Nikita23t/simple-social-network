@@ -14,24 +14,28 @@ export class NotificationsService {
     }) {
         return this.prisma.notification.create({
             data: {
-                ...data,
+                type: data.type,
+                message: data.message,
+                recipient: { connect: { id: data.recipientId } },
+                sender: data.senderId ? { connect: { id: data.senderId } } : undefined,
             },
         });
     }
+
 
     async getUserNotifications(req: Request) {
         if (!req.user) throw new NotFoundException("Данные не пришли");
         const userId = req.user["id"];
         return this.prisma.notification.findMany({
-            where: { recipientId: userId },
-            orderBy: { createdAt: 'desc' },
+            where: { recipient_id: userId },
+            orderBy: { created_at: 'desc' },
         });
     }
 
     async markAsRead(id: number) {
         return this.prisma.notification.update({
             where: { id },
-            data: { isRead: true },
+            data: { is_read: true },
         });
     }
 }

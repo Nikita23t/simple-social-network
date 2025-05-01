@@ -13,10 +13,14 @@ import { CommentsService } from "./comments.service";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { UpdateCommentDto } from "./dto/update-comment.dto";
 import { Auth } from "../auth/decorators/auth.decorator";
+import {ReactionsService} from "../reactions/reactions.service";
 
 @Controller("/comments")
 export class CommentsController {
-  constructor(private commentsService: CommentsService) {}
+  constructor(
+      private commentsService: CommentsService,
+      private reactionsService: ReactionsService
+  ) {}
 
   @Post("/create")
   @Auth()
@@ -48,15 +52,15 @@ export class CommentsController {
     return this.commentsService.delete(id);
   }
 
-  @Patch("/like/:id")
+  @Patch('/like/:id')
   @Auth()
-  like(@Param("id", ParseIntPipe) id: number) {
-    return this.commentsService.like(id);
+  like(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.reactionsService.reactToComment(req.user.id, id, 'LIKE');
   }
 
-  @Patch("/dislike/:id")
+  @Patch('/dislike/:id')
   @Auth()
-  dislike(@Param("id", ParseIntPipe) id: number) {
-    return this.commentsService.dislike(id);
+  dislike(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.reactionsService.reactToComment(req.user.id, id, 'DISLIKE');
   }
 }

@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module";
 import { CommentsModule } from './comments/comments.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import {NotificationsModule} from "./notification/notification.module";
+import {ReactionsModule} from "./reactions/reactions.module";
 import * as path from "node:path";
 
 @Module({
@@ -29,7 +30,8 @@ import * as path from "node:path";
     AuthModule,
     CommentsModule,
     SubscriptionsModule,
-    NotificationsModule
+    NotificationsModule,
+    ReactionsModule
   ],
   exports: [],
 })

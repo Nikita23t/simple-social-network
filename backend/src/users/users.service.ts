@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateUserDto } from "./dto/create-user.dto";
+import {CreateUserDto, Role} from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { Request } from "express";
 import * as bcrypt from 'bcrypt';
@@ -18,7 +18,7 @@ export class UsersService {
                 first_name: dto.first_name,
                 last_name: dto.last_name,
                 nickname: dto.nickname,
-                hash,
+                hash: hash,
                 role: dto.role,
                 bio: dto.bio,
                 avatar_url: dto.avatar_url,
@@ -43,7 +43,7 @@ export class UsersService {
             where: { id },
             data: {
                 ...dto,
-                updatedAt: new Date(),
+                updated_at: new Date(),
             },
         });
     }

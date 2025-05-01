@@ -13,15 +13,20 @@ import { PostsService } from "./posts.service";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
 import { Auth } from "../auth/decorators/auth.decorator";
+import { Request } from "express";
+import {ReactionsService} from "../reactions/reactions.service";
 
 @Controller("/posts")
 export class PostsController {
-  constructor(private postsService: PostsService) {}
+  constructor(
+      private postsService: PostsService,
+      private reactionsService: ReactionsService
+  ) {}
 
   @Post("/create")
   @Auth()
-  create(@Req() req, @Body() dto: CreatePostDto) {
-    return this.postsService.create(req.user.id, dto);
+  create(@Req() req: Request, @Body() dto: CreatePostDto) {
+    return this.postsService.create(req, dto);
   }
 
   @Get("/all")
@@ -36,10 +41,10 @@ export class PostsController {
     return this.postsService.findById(id);
   }
 
-  @Patch("/update/:id")
+  @Patch("/update")
   @Auth()
-  update(@Param("id", ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
-    return this.postsService.update(id, dto);
+  update(@Req() req: Request, @Body() dto: UpdatePostDto) {
+    return this.postsService.update(req, dto);
   }
 
   @Delete("/delete/:id")
@@ -48,15 +53,16 @@ export class PostsController {
     return this.postsService.delete(id);
   }
 
-  @Patch("/like/:id")
+  @Patch('/like/:id')
   @Auth()
-  like(@Param("id", ParseIntPipe) id: number) {
-    return this.postsService.like(id);
+  like(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.reactionsService.reactToPost(req.user.id, id, 'LIKE');
   }
 
-  @Patch("/dislike/:id")
+  @Patch('/dislike/:id')
   @Auth()
-  dislike(@Param("id", ParseIntPipe) id: number) {
-    return this.postsService.dislike(id);
+  dislike(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.reactionsService.reactToPost(req.user.id, id, 'DISLIKE');
   }
+
 }

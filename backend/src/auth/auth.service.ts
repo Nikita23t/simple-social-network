@@ -7,9 +7,9 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginUserDto } from './dto/login.dto';
 import { RegisterUserDto } from './dto/register.dto';
-import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
-import { User } from '@prisma/client';
+import { user } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +20,7 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginUserDto) {
-    let user: User | null = null;
+    let user: user | null = null;
 
     if (dto.email) {
       user = await this.prisma.user.findUnique({ where: { email: dto.email } });
@@ -71,7 +71,7 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
-  async generateTokens(user: User) {
+  async generateTokens(user: user) {
     const payload = { id: user.id, nickname: user.nickname };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
@@ -86,11 +86,11 @@ export class AuthService {
       },
     );
 
-    await this.prisma.refreshToken.create({
+    await this.prisma.refresh_token.create({
       data: {
         token: refreshToken,
         user_id: user.id,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       },
     });
 
@@ -101,12 +101,12 @@ export class AuthService {
   }
 
   async refreshAccessToken(refreshToken: string) {
-    const tokenEntity = await this.prisma.refreshToken.findUnique({
+    const tokenEntity = await this.prisma.refresh_token.findUnique({
       where: { token: refreshToken },
       include: { user: true },
     });
 
-    if (!tokenEntity || new Date(tokenEntity.expiresAt) < new Date()) {
+    if (!tokenEntity || new Date(tokenEntity.expires_at) < new Date()) {
       throw new UnauthorizedException('Refresh токен невалиден или истек');
     }
 

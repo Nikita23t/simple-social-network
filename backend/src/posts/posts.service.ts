@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
 import { NotificationsService } from "../notification/notification.service";
+import {Request} from "express";
 
 @Injectable()
 export class PostsService {
@@ -11,17 +12,19 @@ export class PostsService {
     private notificationsService: NotificationsService,
   ) {}
 
-  async create(authorId: number, dto: CreatePostDto) {
+  async create(req: Request, dto: CreatePostDto) {
+    if (!req.user) throw new NotFoundException("Данные не пришли");
+    const userId = req.user["id"];
     const post = await this.prisma.post.create({
       data: {
         ...dto,
-        author_id: authorId,
+        author_id: userId,
       },
     });
 
     const followers = await this.prisma.subscription.findMany({
       where: {
-        following_id: authorId,
+        following_id: userId,
       },
       select: {
         follower_id: true,
@@ -33,7 +36,7 @@ export class PostsService {
         type: "post",
         message: `Пользователь создал новый пост`,
         recipientId: follower.follower_id,
-        senderId: authorId,
+        senderId: userId,
       }),
     );
 
@@ -57,28 +60,16 @@ export class PostsService {
     return post;
   }
 
-  async update(id: number, dto: UpdatePostDto) {
+  async update(req: Request, dto: UpdatePostDto) {
+    if (!req.user) throw new NotFoundException("Данные не пришли");
+    const userId = req.user["id"];
     return this.prisma.post.update({
-      where: { id },
+      where: { id: userId },
       data: dto,
     });
   }
 
   async delete(id: number) {
     return this.prisma.post.delete({ where: { id } });
-  }
-
-  async like(id: number) {
-    return this.prisma.post.update({
-      where: { id },
-      data: { likes: { increment: 1 } },
-    });
-  }
-
-  async dislike(id: number) {
-    return this.prisma.post.update({
-      where: { id },
-      data: { dislikes: { increment: 1 } },
-    });
   }
 }
